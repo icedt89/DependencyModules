@@ -6,7 +6,7 @@ using Xunit;
 
 namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
 {
-    public sealed class AddModulesFromCurrentAssembly
+    public sealed class AddModuleOfT
     {
         [Fact]
         public void ThrowsArgumentNullExceptionIfServiceCollectionIsNull()
@@ -17,7 +17,7 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
 
             // Act, Assert
 #pragma warning disable CS8604 // Possible null reference argument.
-            Assert.Throws<ArgumentNullException>(() => serviceCollection.AddModulesFromCurrentAssembly(configuration));
+            Assert.Throws<ArgumentNullException>(() => serviceCollection.AddModule<DummyDependencyModule>(configuration));
 #pragma warning restore CS8604 // Possible null reference argument.
         }
 
@@ -29,7 +29,7 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
             IConfiguration? configuration = null;
 
             // Act
-            serviceCollection.AddModulesFromCurrentAssembly(configuration);
+            serviceCollection.AddModule<DummyDependencyModule>(configuration);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

@@ -7,7 +7,7 @@ namespace JanHafner.DependencyModules.Tests
     {
         public const string DEPENDENCY = nameof(DummyDependencyModule);
 
-        public override void Register(IServiceCollection services, IConfiguration configuration = null)
+        public override void Register(IServiceCollection services, IConfiguration? configuration = null)
         {
             services.AddSingleton(DEPENDENCY);
         }

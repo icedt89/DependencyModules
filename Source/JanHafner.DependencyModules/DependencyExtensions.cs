@@ -9,24 +9,24 @@ namespace JanHafner.DependencyModules
 {
     public static class DependencyExtensions
     {
-        public static IServiceCollection AddModule<TDependencyModule>(this IServiceCollection serviceCollection, IConfiguration configuration = null)
+        public static IServiceCollection AddModule<TDependencyModule>(this IServiceCollection services, IConfiguration? configuration = null)
             where TDependencyModule : DependencyModule, new()
         {
-            if (serviceCollection is null)
+            if (services is null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(services));
             }
 
             var dependencyModule = new TDependencyModule();
 
-            return serviceCollection.AddModule(dependencyModule, configuration);
+            return services.AddModuleCore(dependencyModule, configuration);
         }
 
-        public static IServiceCollection AddModule(this IServiceCollection serviceCollection, DependencyModule dependencyModule, IConfiguration configuration = null)
+        public static IServiceCollection AddModule(this IServiceCollection services, DependencyModule dependencyModule, IConfiguration? configuration = null)
         {
-            if (serviceCollection is null)
+            if (services is null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(services));
             }
 
             if (dependencyModule is null)
@@ -34,28 +34,33 @@ namespace JanHafner.DependencyModules
                 throw new ArgumentNullException(nameof(dependencyModule));
             }
 
-            dependencyModule.Register(serviceCollection, configuration);
-
-            return serviceCollection;
+            return services.AddModuleCore(dependencyModule, configuration);
         }
 
-        public static IServiceCollection AddModulesFromCurrentAssembly(this IServiceCollection serviceCollection, IConfiguration configuration = null, Func<Assembly, IEnumerable<Type>> typesSelector = null)
+        private static IServiceCollection AddModuleCore(this IServiceCollection services, DependencyModule dependencyModule, IConfiguration? configuration = null)
         {
-            if (serviceCollection is null)
+            dependencyModule.Register(services, configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddModulesFromCurrentAssembly(this IServiceCollection services, IConfiguration? configuration = null, Func<Assembly, IEnumerable<Type>>? typesSelector = null)
+        {
+            if (services is null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(services));
             }
 
             var currentAssembly = Assembly.GetCallingAssembly();
 
-            return serviceCollection.AddModulesFromAssembly(currentAssembly, configuration, typesSelector);
+            return services.AddModulesFromAssemblyCore(currentAssembly, configuration, typesSelector);
         }
 
-        public static IServiceCollection AddModulesFromAssembly(this IServiceCollection serviceCollection, Assembly assembly, IConfiguration configuration = null, Func<Assembly, IEnumerable<Type>> typesSelector = null)
+        public static IServiceCollection AddModulesFromAssembly(this IServiceCollection services, Assembly assembly, IConfiguration? configuration = null, Func<Assembly, IEnumerable<Type>>? typesSelector = null)
         {
-            if (serviceCollection is null)
+            if (services is null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(services));
             }
 
             if (assembly is null)
@@ -63,6 +68,11 @@ namespace JanHafner.DependencyModules
                 throw new ArgumentNullException(nameof(assembly));
             }
 
+            return services.AddModulesFromAssemblyCore(assembly, configuration, typesSelector);
+        }
+
+        private static IServiceCollection AddModulesFromAssemblyCore(this IServiceCollection services, Assembly assembly, IConfiguration? configuration = null, Func<Assembly, IEnumerable<Type>>? typesSelector = null)
+        {
             typesSelector ??= a => a.GetExportedTypes();
 
             var dependencyModuleTypes = typesSelector(assembly).Where(t => typeof(DependencyModule).IsAssignableFrom(t));
@@ -70,10 +80,10 @@ namespace JanHafner.DependencyModules
             {
                 var dependencyModule = (DependencyModule)Activator.CreateInstance(dependencyModuleType);
 
-                dependencyModule.Register(serviceCollection, configuration);
+                dependencyModule.Register(services, configuration);
             }
 
-            return serviceCollection;
+            return services;
         }
     }
 }

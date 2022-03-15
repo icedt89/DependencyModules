@@ -5,6 +5,6 @@ namespace JanHafner.DependencyModules
 {
     public abstract class DependencyModule
     {
-        public abstract void Register(IServiceCollection services, IConfiguration configuration = null);
+        public abstract void Register(IServiceCollection services, IConfiguration? configuration = null);
     }
 }

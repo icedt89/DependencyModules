@@ -3,11 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
@@ -18,12 +14,14 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
         public void ThrowsArgumentNullExceptionIfServiceCollectionIsNull()
         {
             // Arrange
-            IServiceCollection serviceCollection = null;
+            IServiceCollection? serviceCollection = null;
             var assembly = Assembly.GetCallingAssembly();
-            IConfiguration configuration = null;
+            IConfiguration? configuration = null;
 
             // Act, Assert
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Throws<ArgumentNullException>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         [Fact]
@@ -31,11 +29,13 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
         {
             // Arrange
             var serviceCollectionMock = new Mock<IServiceCollection>();
-            Assembly assembly = null;
-            IConfiguration configuration = null;
+            Assembly? assembly = null;
+            IConfiguration? configuration = null;
 
             // Act, Assert
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Throws<ArgumentNullException>(() => serviceCollectionMock.Object.AddModulesFromAssembly(assembly, configuration));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
             // Arrange
             var serviceCollection = new ServiceCollection();
             var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration configuration = null;
+            IConfiguration? configuration = null;
 
             // Act
             serviceCollection.AddModulesFromAssembly(assembly, configuration);
@@ -62,7 +62,7 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
             // Arrange
             var serviceCollection = new ServiceCollection();
             var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration configuration = null;
+            IConfiguration? configuration = null;
 
             // Act, Assert
             Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicConstructor) }));
@@ -74,7 +74,7 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
             // Arrange
             var serviceCollection = new ServiceCollection();
             var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration configuration = null;
+            IConfiguration? configuration = null;
 
             // Act, Assert
             Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicParameterlessConstructor) }));
@@ -85,10 +85,10 @@ namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
         {
             var serviceCollection = new ServiceCollection();
             var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration configuration = null;
+            IConfiguration? configuration = null;
 
             // Act
-            serviceCollection.AddModulesFromAssembly(assembly, configuration);
+            serviceCollection.AddModulesFromAssembly(assembly, configuration, null);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

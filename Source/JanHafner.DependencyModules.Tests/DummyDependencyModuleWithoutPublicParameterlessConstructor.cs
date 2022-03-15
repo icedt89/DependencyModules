@@ -11,7 +11,7 @@ namespace JanHafner.DependencyModules.Tests
         {
         }
 
-        public override void Register(IServiceCollection services, IConfiguration configuration = null)
+        public override void Register(IServiceCollection services, IConfiguration? configuration = null)
         {
             services.AddSingleton(DEPENDENCY);
         }
