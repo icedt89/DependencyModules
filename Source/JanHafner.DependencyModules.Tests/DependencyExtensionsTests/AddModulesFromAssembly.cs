@@ -6,95 +6,94 @@ using System;
 using System.Reflection;
 using Xunit;
 
-namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests
+namespace JanHafner.DependencyModules.Tests.DependencyExtensionsTests;
+
+public sealed class AddModulesFromAssembly
 {
-    public sealed class AddModulesFromAssembly
+    [Fact]
+    public void ThrowsArgumentNullExceptionIfServiceCollectionIsNull()
     {
-        [Fact]
-        public void ThrowsArgumentNullExceptionIfServiceCollectionIsNull()
-        {
-            // Arrange
-            IServiceCollection? serviceCollection = null;
-            var assembly = Assembly.GetCallingAssembly();
-            IConfiguration? configuration = null;
+        // Arrange
+        IServiceCollection? serviceCollection = null;
+        var assembly = Assembly.GetCallingAssembly();
+        IConfiguration? configuration = null;
 
-            // Act, Assert
+        // Act, Assert
 #pragma warning disable CS8604 // Possible null reference argument.
-            Assert.Throws<ArgumentNullException>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration));
+        Assert.Throws<ArgumentNullException>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration));
 #pragma warning restore CS8604 // Possible null reference argument.
-        }
+    }
 
-        [Fact]
-        public void ThrowsArgumentNullExceptionIfAssemblyIsNull()
-        {
-            // Arrange
-            var serviceCollectionMock = new Mock<IServiceCollection>();
-            Assembly? assembly = null;
-            IConfiguration? configuration = null;
+    [Fact]
+    public void ThrowsArgumentNullExceptionIfAssemblyIsNull()
+    {
+        // Arrange
+        var serviceCollectionMock = new Mock<IServiceCollection>();
+        Assembly? assembly = null;
+        IConfiguration? configuration = null;
 
-            // Act, Assert
+        // Act, Assert
 #pragma warning disable CS8604 // Possible null reference argument.
-            Assert.Throws<ArgumentNullException>(() => serviceCollectionMock.Object.AddModulesFromAssembly(assembly, configuration));
+        Assert.Throws<ArgumentNullException>(() => serviceCollectionMock.Object.AddModulesFromAssembly(assembly, configuration));
 #pragma warning restore CS8604 // Possible null reference argument.
-        }
+    }
 
-        [Fact]
-        public void RegistersDependenciesCorrectly()
-        {
-            // Arrange
-            var serviceCollection = new ServiceCollection();
-            var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration? configuration = null;
+    [Fact]
+    public void RegistersDependenciesCorrectly()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+        var assembly = Assembly.GetExecutingAssembly();
+        IConfiguration? configuration = null;
 
-            // Act
-            serviceCollection.AddModulesFromAssembly(assembly, configuration);
+        // Act
+        serviceCollection.AddModulesFromAssembly(assembly, configuration);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            // Assert
-            var dependency = serviceProvider.GetRequiredService<string>();
-            dependency.Should().Be(DummyDependencyModule.DEPENDENCY);
-        }
+        // Assert
+        var dependency = serviceProvider.GetRequiredService<string>();
+        dependency.Should().Be(DummyDependencyModule.DEPENDENCY);
+    }
 
-        [Fact]
-        public void ThrowsExceptionIfDependencyModuleHasNoPublicConstructor()
-        {
-            // Arrange
-            var serviceCollection = new ServiceCollection();
-            var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration? configuration = null;
+    [Fact]
+    public void ThrowsExceptionIfDependencyModuleHasNoPublicConstructor()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+        var assembly = Assembly.GetExecutingAssembly();
+        IConfiguration? configuration = null;
 
-            // Act, Assert
-            Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicConstructor) }));
-        }
+        // Act, Assert
+        Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicConstructor) }));
+    }
 
-        [Fact]
-        public void ThrowsExceptionIfDependencyModuleHasNoPublicParameterlessConstructor()
-        {
-            // Arrange
-            var serviceCollection = new ServiceCollection();
-            var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration? configuration = null;
+    [Fact]
+    public void ThrowsExceptionIfDependencyModuleHasNoPublicParameterlessConstructor()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+        var assembly = Assembly.GetExecutingAssembly();
+        IConfiguration? configuration = null;
 
-            // Act, Assert
-            Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicParameterlessConstructor) }));
-        }
+        // Act, Assert
+        Assert.ThrowsAny<Exception>(() => serviceCollection.AddModulesFromAssembly(assembly, configuration, a => new[] { typeof(DummyDependencyModuleWithoutPublicParameterlessConstructor) }));
+    }
 
-        [Fact]
-        public void RegistersDependenciesOfExportedTypesIfTypeSelectorIsNullCorrectly()
-        {
-            var serviceCollection = new ServiceCollection();
-            var assembly = Assembly.GetExecutingAssembly();
-            IConfiguration? configuration = null;
+    [Fact]
+    public void RegistersDependenciesOfExportedTypesIfTypeSelectorIsNullCorrectly()
+    {
+        var serviceCollection = new ServiceCollection();
+        var assembly = Assembly.GetExecutingAssembly();
+        IConfiguration? configuration = null;
 
-            // Act
-            serviceCollection.AddModulesFromAssembly(assembly, configuration, null);
+        // Act
+        serviceCollection.AddModulesFromAssembly(assembly, configuration, null);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            // Assert
-            var dependency = serviceProvider.GetRequiredService<string>();
-            dependency.Should().Be(DummyDependencyModule.DEPENDENCY);
-        }
+        // Assert
+        var dependency = serviceProvider.GetRequiredService<string>();
+        dependency.Should().Be(DummyDependencyModule.DEPENDENCY);
     }
 }

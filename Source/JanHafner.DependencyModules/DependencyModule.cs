@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JanHafner.DependencyModules
+namespace JanHafner.DependencyModules;
+
+public abstract class DependencyModule
 {
-    public abstract class DependencyModule
-    {
-        public abstract void Register(IServiceCollection services, IConfiguration? configuration = null);
-    }
+    public abstract void Register(IServiceCollection services, IConfiguration? configuration = null);
 }
